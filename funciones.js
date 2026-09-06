@@ -59,18 +59,14 @@ function accion_saltar() {
   if (posY_saltar <= 250) {
     estado_saltar = 1;
   } 
-  else if (posY_saltar >= 415) {
-    estado_saltar = -1;
 
-    if (posX_caminar > width + 100) {
-      estado_personaje = "CAMINAR";
-      posX_caminar = 0;
-      posY_saltar = 415;
-      posX_fondo = 0;
-      tiempoEstado = 0;
-}
-if (posX_caminar > width + 100) {
-  reiniciar();
-    }
+  else if (posY_saltar >= 415) {
+    posY_saltar = 415;
+    estado_saltar = 0;
+    estado_personaje = "ACELERAR";
+    tiempoEstado = 0;
+  }
+  if (posX_caminar > width + 100) {
+    reiniciar();
   }
 }
