@@ -1,6 +1,5 @@
 class Enemigo {
-
-  constructor(posX) {
+  constructor(posX) { // caracteristicas
     this.posX = posX;
     this.posY = 310;
 
@@ -10,7 +9,11 @@ class Enemigo {
     this.inicioX = posX - random(50, 80);
     this.finX = posX + random(50, 80);
 
-    this.direccion = random() < 0.5 ? -1 : 1;
+    if (random() < 0.5) {
+    this.direccion = -1;
+  } else {
+    this.direccion = 1;
+  }
     this.velocidad = random(0.5, 1.2);
 
     this.frameActual = 0;
@@ -22,22 +25,21 @@ class Enemigo {
 
   actualizar() {
 
-    // Si está haciendo una pausa, se queda quieto
+    // si hace pausa para
     if (this.pausa > 0) {
       this.pausa--;
     } else {
 
-      // Movimiento
       this.posX += this.velocidad * this.direccion;
 
-      // Llegó al límite izquierdo
+      // llega al limtie izq
       if (this.posX <= this.inicioX) {
         this.posX = this.inicioX;
         this.direccion = 1;
         this.pausa = 25;
       }
 
-      // Llegó al límite derecho
+      // llega al limite derehco
       if (this.posX >= this.finX) {
         this.posX = this.finX;
         this.direccion = -1;
@@ -45,7 +47,7 @@ class Enemigo {
       }
     }
 
-    // Animación
+    // animacion
     this.contadorAnimacion++;
 
     if (this.contadorAnimacion >= this.velocidadAnimacion) {
@@ -58,12 +60,12 @@ class Enemigo {
 
     let imagenes;
 
-    // Cuando está quieto, mira de frente
+    // cuando esta quieto, mira de frente
     if (this.pausa > 0) {
       imagenes = enemigoQuieto;
     } 
     // Caminando hacia la izquierda
-    else if (this.direccion === -1) {
+    else if (this.direccion == -1) {
       imagenes = enemigoCaminandoI;
     } 
     // Caminando hacia la derecha
