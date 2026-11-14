@@ -1,263 +1,187 @@
-class Juego {
+class Juego { // distintos elementos que formaan parte de la partida
 
   constructor() {
+    this.crearPersonaje();
+
     this.fragmentos = [];
+    this.crearFragmentos();
+
     this.plataformas = [];
+    this.crearPlataformas();
+
     this.enemigos = [];
+    this.crearEnemigos();
 
-    this.personaje = null;
-    this.estado = "inicio";
+    this.estado = "inicio"; // creamos una variable nos permite controlar en que parte del juego estamos
+
+    this.desplazamiento = 0;
   }
 
-  preload() {
-    imagenInicio = loadImage("data/inicio.jpg");
-
-    // SONIDOS
-    musica = loadSound("data/musica.mp3");
-    sonidoFragmento = loadSound("data/fragmento.mp3");
-    sonidoGanar = loadSound("data/ganar.mp3");
-    sonidoPerder = loadSound("data/perder.mp3");
-
-    for (let i = 1; i <= 4; i++) {
-      personajeQuieto[i - 1] = loadImage("data/quieto-" + i + ".png");
-    }
-
-    for (let i = 1; i <= 8; i++) {
-      personajeCorriendoD[i - 1] = loadImage("data/corriendoderecha-" + i + ".png");
-      personajeCorriendoI[i - 1] = loadImage("data/corriendoizq-" + i + ".png");
-    }
-
-    for (let i = 1; i <= 9; i++) {
-      personajeSaltando[i - 1] = loadImage("data/saltando-" + i + ".png");
-    }
-
-    fondo = loadImage("data/mazmorra.jpg");
-    pantallaPerdedor = loadImage("data/perdedor.jpg");
-    pantallaGanador = loadImage("data/ganador.jpg");
-
-    enemigoQuieto.push(loadImage("data/enemigo-1.png"));
-
-    for (let i = 10; i <= 14; i++) {
-      enemigoQuieto.push(loadImage("data/enemigo-" + i + ".png"));
-    }
-
-    for (let i = 6; i <= 7; i++) {
-      enemigoCaminandoI.push(loadImage("data/enemigo-" + i + ".png"));
-    }
-
-    for (let i = 8; i <= 9; i++) {
-      enemigoCaminandoD.push(loadImage("data/enemigo-" + i + ".png"));
-    }
-
-    imagenFragmento = loadImage("data/fragmento.png");
-    imagenPlataforma1 = loadImage("data/plataforma-1.png");
-    imagenPlataforma2 = loadImage("data/plataforma-2.png");
-    imagenPlataforma3 = loadImage("data/plataforma-3.png");
-  }
-
-  iniciar() {
-
-    // Detiene la música anterior si estaba sonando
-    if (musica.isPlaying()) {
-      musica.stop();
-    }
-
+  crearPersonaje() {
     this.personaje = new Personaje(0, 300);
+  }
 
+  crearFragmentos() {
     this.fragmentos = [];
-    this.agregarFragmentos();
 
-    this.plataformas = [];
-    this.agregarPlataformas();
+    this.fragmentos.push(new Fragmento(115, 310));
+    this.fragmentos.push(new Fragmento(255, 240));
+    this.fragmentos.push(new Fragmento(556, 215));
+    this.fragmentos.push(new Fragmento(760, 310));
+    this.fragmentos.push(new Fragmento(870, 240));
+    this.fragmentos.push(new Fragmento(1220, 215));
+    this.fragmentos.push(new Fragmento(1430, 310));
+    this.fragmentos.push(new Fragmento(1580, 240));
+  }
 
+  crearEnemigos() {
     this.enemigos = [];
-    this.agregarEnemigos();
 
-    this.estado = "jugando";
-
-    // Inicia la música de fondo
-    musica.setVolume(0.3);
-    musica.loop();
+    this.enemigos.push(new Enemigo(350));
+    this.enemigos.push(new Enemigo(1000));
+    this.enemigos.push(new Enemigo(1540));
   }
 
-  agregarFragmentos() {
-    this.fragmentos.push(new Fragmento(100, 310));
-    this.fragmentos.push(new Fragmento(190, 220));
-    this.fragmentos.push(new Fragmento(290, 180));
-    this.fragmentos.push(new Fragmento(390, 300));
-    this.fragmentos.push(new Fragmento(490, 220));
-    this.fragmentos.push(new Fragmento(590, 180));
-    this.fragmentos.push(new Fragmento(680, 300));
-    this.fragmentos.push(new Fragmento(760, 220));
+  crearPlataformas() {
+    this.plataformas = [];
+
+    this.plataformas.push(new Plataforma(220, 275, 1));
+    this.plataformas.push(new Plataforma(500, 250, 2));
+    this.plataformas.push(new Plataforma(850, 275, 1));
+    this.plataformas.push(new Plataforma(1150, 250, 3));
+    this.plataformas.push(new Plataforma(1500, 275, 2));
   }
 
-  agregarPlataformas() {
-    this.plataformas.push(new Plataforma(130, 270, 1));
-    this.plataformas.push(new Plataforma(260, 230, 2));
-    this.plataformas.push(new Plataforma(410, 270, 1));
-    this.plataformas.push(new Plataforma(530, 230, 3));
-    this.plataformas.push(new Plataforma(680, 270, 2));
-  }
+  dibujar() { // el metodo dibujar determina que pantalla o elemtnos se muestran
+ if (this.estado == "inicio") {
+    this.dibujarInicio();
 
-  agregarEnemigos() {
-    this.enemigos.push(new Enemigo(230));
-    this.enemigos.push(new Enemigo(450));
-    this.enemigos.push(new Enemigo(650));
-  }
+  } else if (this.estado == "instrucciones") {
+    this.dibujarInstrucciones();
 
-  dibujar() {
-    if (this.estado == "inicio") {
-      this.dibujarInicio();
-    }
-    else if (this.estado == "instrucciones") {
-      this.dibujarInstrucciones();
-    }
-    else if (this.estado == "creditos") {
-      this.dibujarCreditos();
-    }
-    else if (this.estado == "jugando") {
-      this.dibujarJuego();
-    }
-    else if (this.estado == "perdiste") {
-      image(pantallaPerdedor, 0, 0, width, height);
-      this.mostrarReinicio();
-    }
-    else if (this.estado == "ganaste") {
-      image(pantallaGanador, 0, 0, width, height);
-      this.mostrarReinicio();
-    }
-  }
+  } else if (this.estado == "creditos") {
+    this.dibujarCreditos();
 
-  dibujarInicio() {
-    image(imagenInicio, 0, 0, width, height);
+  } else if (this.estado == "perdiste") {
+    image(pantallaPerdedor, 0, 0, width, height);
 
-    this.boton(320, 190, 160, 45, "JUGAR");
-    this.boton(320, 250, 160, 45, "INSTRUCCIONES");
-    this.boton(320, 310, 160, 45, "CREDITOS");
-  }
+  } else if (this.estado == "ganaste") {
+    image(pantallaGanador, 0, 0, width, height);
 
-  dibujarInstrucciones() {
-    background(25, 30, 45);
+  } else if (this.estado == "jugando") {
 
-    fill(255);
-    textAlign(CENTER);
-    textSize(30);
-    text("INSTRUCCIONES", 400, 65);
-
-    textSize(18);
-    text("¡Ayuda a Link a recuperar los ocho fragmentos!", 400, 120);
-    text("Usa las flechas para moverte.", 400, 165);
-    text("Presiona ESPACIO para saltar.", 400, 200);
-    text("Evita a los enemigos de la mazmorra.", 400, 235);
-    text("Recolecta los 8 fragmentos para ganar.", 400, 270);
-
-    this.boton(320, 325, 160, 45, "VOLVER");
-  }
-
-  dibujarCreditos() {
-    background(25, 30, 45);
-
-    fill(255);
-    textAlign(CENTER);
-    textSize(30);
-    text("CREDITOS", 400, 80);
-
-    textSize(19);
-    text("Juego desarrollado por:", 400, 150);
-    text("María Agustina Saldano", 400, 190);
-
-    this.boton(320, 315, 160, 45, "VOLVER");
-  }
-
-  boton(x, y, ancho, alto, nombre) {
-    fill(180, 130, 40);
-    rect(x, y, ancho, alto, 10);
-
-    fill(255);
-    textAlign(CENTER, CENTER);
-    textSize(18);
-    text(nombre, x + ancho / 2, y + alto / 2);
-  }
-
-  mostrarReinicio() {
-    fill(255);
-    textAlign(CENTER);
-    textSize(18);
-    text("Presiona R para volver a jugar", 400, 375);
-  }
-
-  dibujarJuego() {
     background(0);
-    image(fondo, 0, -130, 800, 614);
 
     this.moverPersonaje();
 
-    this.dibujarPlataformas();
-    this.dibujarFragmentos();
-    this.dibujarPersonaje();
-    this.dibujarEnemigos();
+    this.desplazamiento = this.personaje.posX - 300;
 
-    this.detectarFragmentos();
-
-    // Solo detecta enemigos si todavía está jugando
-    if (this.estado == "jugando") {
-      this.detectarEnemigos();
+    if (this.desplazamiento < 0) {
+      this.desplazamiento = 0;
     }
 
-    if (this.estado == "jugando") {
-      this.mostrarContador();
-    }
-  }
+    this.dibujarParallax(fondo, 0.3);
 
-  moverPersonaje() {
-    if (keyIsDown(RIGHT_ARROW)) {
-      this.personaje.moverDerecha();
-    }
+    push();
+    translate(-this.desplazamiento, 0);
 
-    if (keyIsDown(LEFT_ARROW)) {
-      this.personaje.moverIzquierda();
-    }
-  }
-
-  dibujarPersonaje() {
-    this.personaje.aplicarGravedad(this.plataformas);
-    this.personaje.dibujar();
-  }
-
-  dibujarFragmentos() {
-    for (let i = 0; i < this.fragmentos.length; i++) {
-      this.fragmentos[i].dibujar();
-    }
-  }
-
-  dibujarPlataformas() {
     for (let i = 0; i < this.plataformas.length; i++) {
       this.plataformas[i].dibujar();
     }
-  }
 
-  dibujarEnemigos() {
+    for (let i = 0; i < this.fragmentos.length; i++) {
+      this.fragmentos[i].dibujar();
+    }
+
+    this.personaje.aplicarGravedad(this.plataformas);
+    this.personaje.actualizarEstado();
+    this.personaje.dibujar();
+
     for (let i = 0; i < this.enemigos.length; i++) {
       this.enemigos[i].actualizar();
       this.enemigos[i].dibujar();
     }
+
+    this.detectarFragmentos();
+    this.detectarEnemigos();
+
+    pop();
+
+    this.mostrarContador();
+  }
+  }
+
+  dibujarInicio() { // menu de incio
+    image(imagenInicio, 0, 0, width, height);
+
+    image(botonJugar, 80, 320, 150, 50);
+
+    image(botonInst, 320, 320, 160, 50);
+
+    image(botonCreditos, 560, 320, 160, 50);
+  }
+  dibujarInstrucciones() {
+    image(imagenInst, 0, 0, width, height);
+
+    image(volver, 320, 325, 160, 45);
+  }
+
+  dibujarCreditos() {
+    image(imagenCreditos, 0, 0, width, height);
+
+    image(volver, 320, 325, 160, 45);
+  }
+
+
+  moverPersonaje() {
+    if (this.estado == "jugando") {
+
+      if (keyIsDown(RIGHT_ARROW)) {
+        this.personaje.moverDerecha();
+      }
+
+      if (keyIsDown(LEFT_ARROW)) {
+        this.personaje.moverIzquierda();
+      }
+    }
+  }
+
+  detectarEnemigos() {
+
+    for (let i = 0; i < this.enemigos.length; i++) {
+
+      let enemigo = this.enemigos[i];
+
+      let centroLinkX = this.personaje.posX + this.personaje.ancho / 2;
+      let centroLinkY = this.personaje.posY + this.personaje.alto / 2;
+
+      let centroEnemigoX = enemigo.posX + enemigo.ancho / 2;
+      let centroEnemigoY = enemigo.posY + enemigo.alto / 2;
+
+      let distancia = dist(centroLinkX, centroLinkY, centroEnemigoX, centroEnemigoY);
+
+      if (distancia < 30 && this.estado == "jugando") {
+        this.estado = "perdiste";
+
+        musica.stop();
+        sonidoGanar.stop();
+        sonidoPerder.play();
+      }
+    }
   }
 
   detectarFragmentos() {
+
     for (let i = 0; i < this.fragmentos.length; i++) {
 
-      if (!this.fragmentos[i].recolectado) {
+      let fragmento = this.fragmentos[i];
 
-        if (dist(
-          this.personaje.posX + this.personaje.ancho / 2,
-          this.personaje.posY + this.personaje.alto / 2,
-          this.fragmentos[i].posX,
-          this.fragmentos[i].posY
-        ) < 50) {
+      if (!fragmento.recolectado) {
 
-          this.fragmentos[i].recolectado = true;
+        let distancia = dist( this.personaje.posX + this.personaje.ancho / 2, this.personaje.posY + this.personaje.alto / 2, fragmento.posX, fragmento.posY);
 
-          // Sonido al recoger un fragmento
+        if (distancia < 50) {
+          fragmento.recolectado = true;
           sonidoFragmento.play();
         }
       }
@@ -271,38 +195,12 @@ class Juego {
       }
     }
 
-    if (cantidad == 8 && this.estado == "jugando") {
-
+    if (cantidad === 8 && this.estado == "jugando") {
       this.estado = "ganaste";
 
-      // Detiene la música y reproduce el sonido de victoria
       musica.stop();
+      sonidoPerder.stop();
       sonidoGanar.play();
-    }
-  }
-
-  detectarEnemigos() {
-    for (let i = 0; i < this.enemigos.length; i++) {
-
-      let centroLinkX = this.personaje.posX + this.personaje.ancho / 2;
-      let centroLinkY = this.personaje.posY + this.personaje.alto / 2;
-
-      let centroEnemigoX = this.enemigos[i].posX + this.enemigos[i].ancho / 2;
-      let centroEnemigoY = this.enemigos[i].posY + this.enemigos[i].alto / 2;
-
-      if (dist(
-        centroLinkX,
-        centroLinkY,
-        centroEnemigoX,
-        centroEnemigoY
-      ) < 30 && this.estado == "jugando") {
-
-        this.estado = "perdiste";
-
-        // Detiene la música y reproduce el sonido de derrota
-        musica.stop();
-        sonidoPerder.play();
-      }
     }
   }
 
@@ -315,51 +213,65 @@ class Juego {
       }
     }
 
-    fill(255);
-    textSize(20);
-    textAlign(LEFT);
-    text("Fragmentos: " + cantidad + " / 8", 20, 30);
+    image(contadorFragmentos[cantidad], 20, 15, 120, 50);
   }
 
+  dibujarParallax(imagenFondo, velocidad) {
+    let escalaFondo = height / imagenFondo.height;
+    ancho_fondo = imagenFondo.width * escalaFondo;
+
+    image(imagenFondo, fondo_parallax, 15, ancho_fondo, height);
+    image(imagenFondo, fondo_parallax + ancho_fondo, 15, ancho_fondo, height);
+
+    fondo_parallax -= velocidad;
+
+    if (fondo_parallax <= -ancho_fondo) {
+      fondo_parallax = 0;
+    }
+  }
+// interacciones del mouse y teclado
   teclaPresionada() {
-    if ((this.estado == "perdiste" || this.estado == "ganaste") &&
-        (key == "r" || key == "R")) {
-      this.iniciar();
-    }
 
-    if (this.estado == "jugando" && key == " ") {
-      this.personaje.saltar();
-    }
+  if ((this.estado == "perdiste" || this.estado == "ganaste") &&
+      (key == "r" || key == "R")) {
+
+    musica.stop();
+    sonidoGanar.stop();
+    sonidoPerder.stop();
+
+    juego = new Juego();
+    musica.loop();
+
+  } else if (this.estado == "jugando" && key == " ") {
+
+    this.personaje.saltar();
+
   }
-
+  }
   mousePresionado() {
 
     if (this.estado == "inicio") {
 
-      if (mouseX > 320 && mouseX < 480 &&
-          mouseY > 190 && mouseY < 235) {
-        this.iniciar();
-      }
+      // jugar
+      if (mouseX >= 80 && mouseX <= 240 && mouseY >= 320 && mouseY <= 370) {
+        musica.setVolume(0.3);
+        musica.loop();
+        this.estado = "jugando";
+      } else if (mouseX >= 320 && mouseX <= 480 &&  mouseY >= 320 && mouseY <= 370) {
 
-      else if (mouseX > 320 && mouseX < 480 &&
-               mouseY > 250 && mouseY < 295) {
         this.estado = "instrucciones";
-      }
+      } else if (mouseX >= 560 && mouseX <= 720 && mouseY >= 320 && mouseY <= 370) {
 
-      else if (mouseX > 320 && mouseX < 480 &&
-               mouseY > 310 && mouseY < 355) {
         this.estado = "creditos";
       }
-    }
+    } else if (this.estado == "instrucciones" ||
+      this.estado == "creditos") {
 
-    else if (this.estado == "instrucciones" ||
-             this.estado == "creditos") {
+      if (mouseX >= 320 && mouseX <= 480 && mouseY >= 325 && mouseY <= 375) {
 
-      if (mouseX > 320 && mouseX < 480 &&
-          mouseY > 315 && mouseY < 360) {
         this.estado = "inicio";
       }
     }
   }
-
 }
+  
